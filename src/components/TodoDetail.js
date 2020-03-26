@@ -1,12 +1,17 @@
 import React from "react";
+import { TodoContext } from "./../TodoContext";
 
-function TodoDetail({ todo, handleDeleteClick, handleCompleteClick }) {
+function TodoDetail({ todo }) {
   function renderDeleteIcon() {
     return (
-      <i
-        className="close icon"
-        onClick={e => handleDeleteClick(todo.title)}
-      ></i>
+      <TodoContext.Consumer>
+        {context => (
+          <i
+            className="close icon"
+            onClick={() => context.handleDeleteClick(todo.title)}
+          ></i>
+        )}
+      </TodoContext.Consumer>
     );
   }
 
@@ -16,10 +21,14 @@ function TodoDetail({ todo, handleDeleteClick, handleCompleteClick }) {
     }
 
     return (
-      <i
-        className="check icon"
-        onClick={e => handleCompleteClick(todo.title)}
-      ></i>
+      <TodoContext.Consumer>
+        {context => (
+          <i
+            className="check icon"
+            onClick={() => context.handleCompleteClick(todo.title)}
+          ></i>
+        )}
+      </TodoContext.Consumer>
     );
   }
 

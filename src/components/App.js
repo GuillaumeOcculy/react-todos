@@ -1,74 +1,49 @@
 import React from "react";
 import TodoList from "./TodoList";
+import { TodoContext } from "./../TodoContext";
 
 class App extends React.Component {
-  state = {
-    todos: [{ title: "Hello World", isCompleted: false }],
-    todoName: ""
-  };
+  state = { todoName: "" };
 
   handleChange = event => {
     this.setState({ todoName: event.target.value });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event, context) => {
     event.preventDefault();
-    if (!this.state.todoName) {
-      return;
-    }
-
-    this.setState(prevState => {
-      return {
-        todos: [
-          ...prevState.todos,
-          { title: prevState.todoName, isCompleted: false }
-        ],
-        todoName: ""
-      };
-    });
-  };
-
-  handleDeleteClick = todoName => {
-    let todos = [...this.state.todos];
-    const index = todos.findIndex(todo => todo.title === todoName);
-    todos.splice(index, 1);
-
-    this.setState({ todos });
-  };
-
-  handleCompleteClick = todoName => {
-    let todos = [...this.state.todos];
-    const index = todos.findIndex(todo => todo.title === todoName);
-    todos[index].isCompleted = true;
-
-    this.setState({ todos });
+    context.handleSubmit(this.state.todoName);
+    this.setState({ todoName: "" });
   };
 
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit} className="ui form">
-          <div className="field">
-            <label>Todo name</label>
-            <input
-              type="text"
-              value={this.state.todoName}
-              placeholder="Enter a todo name"
-              autoFocus
-              onChange={this.handleChange}
-            />
-          </div>
-          <button className="ui button" type="submit">
-            Submit
-          </button>
-        </form>
-        {
-          <TodoList
-            todos={this.state.todos}
-            handleDeleteClick={this.handleDeleteClick}
-            handleCompleteClick={this.handleCompleteClick}
-          />
-        }
+        <TodoContext.Consumer>
+          {context => (
+            <div>
+              <form
+                onSubmit={e => this.handleSubmit(e, context)}
+                className="ui form"
+              >
+                <div className="field">
+                  <label>Todo name</label>
+                  <input
+                    type="text"
+                    value={this.state.todoName}
+                    placeholder="Enter a todo name"
+                    onChange={this.handleChange}
+                    autoFocus
+                  />
+                </div>
+                <button className="ui button" type="submit">
+                  Submit
+                </button>
+              </form>
+
+              <TodoList todos={context.todos} />
+            </div>
+          )}
+        </TodoContext.Consumer>
       </div>
     );
   }
