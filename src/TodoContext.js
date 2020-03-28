@@ -1,52 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 
 const TodoContext = React.createContext({});
 
-class TodoContextProvider extends React.Component {
-  state = { todos: [{ title: "Hello World", isCompleted: false }] };
+function TodoContextProvider(props) {
+  const firstTodo = { title: "Hello World", isCompleted: false };
+  const [todos, setTodos] = useState([firstTodo]);
 
-  handleSubmit = todoName => {
+  function handleSubmit(todoName) {
     if (!todoName) {
       return;
     }
 
-    this.setState(prevState => {
-      return {
-        todos: [...prevState.todos, { title: todoName, isCompleted: false }]
-      };
-    });
-  };
-
-  handleDeleteClick = todoName => {
-    let todos = [...this.state.todos];
-    const index = todos.findIndex(todo => todo.title === todoName);
-    todos.splice(index, 1);
-
-    this.setState({ todos });
-  };
-
-  handleCompleteClick = todoName => {
-    let todos = [...this.state.todos];
-    const index = todos.findIndex(todo => todo.title === todoName);
-    todos[index].isCompleted = true;
-
-    this.setState({ todos });
-  };
-
-  render() {
-    return (
-      <TodoContext.Provider
-        value={{
-          todos: this.state.todos,
-          handleSubmit: this.handleSubmit,
-          handleCompleteClick: this.handleCompleteClick,
-          handleDeleteClick: this.handleDeleteClick
-        }}
-      >
-        {this.props.children}
-      </TodoContext.Provider>
-    );
+    setTodos([...todos, { title: todoName, isCompleted: false }]);
   }
+
+  function handleDeleteClick(todoName) {
+    let newTodos = [...todos];
+    const index = newTodos.findIndex(todo => todo.title === todoName);
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  }
+
+  function handleCompleteClick(todoName) {
+    let newTodos = [...todos];
+    const index = newTodos.findIndex(todo => todo.title === todoName);
+    newTodos[index].isCompleted = true;
+    setTodos(newTodos);
+  }
+
+  return (
+    <TodoContext.Provider
+      value={{
+        todos: todos,
+        handleSubmit: handleSubmit,
+        handleCompleteClick: handleCompleteClick,
+        handleDeleteClick: handleDeleteClick
+      }}
+    >
+      {props.children}
+    </TodoContext.Provider>
+  );
 }
 
 export { TodoContext, TodoContextProvider };
