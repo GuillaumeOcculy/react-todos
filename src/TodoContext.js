@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import jsonPlacholder from "./apis/jsonPlaceholder";
 
 const TodoContext = React.createContext({});
 
 function TodoContextProvider(props) {
-  const firstTodo = { title: "Hello World", isCompleted: false };
-  const [todos, setTodos] = useState([firstTodo]);
+  const [todos, setTodos] = useState([]);
+
+  async function fetchTodos() {
+    const response = await jsonPlacholder.get("/todos");
+    setTodos(response.data);
+  }
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
   function handleSubmit(todoName) {
     if (!todoName) {
